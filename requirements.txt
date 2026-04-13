@@ -1,0 +1,21 @@
+# Core Deep Learning (Stable version for your system)
+tensorflow==2.20.0
+scikit-learn==1.6.1
+numpy<2.0.0
+pandas==2.2.3
+
+# LLM & NLP
+transformers==4.49.0
+torch==2.6.0
+sentencepiece
+
+# Finance & Trading
+alpaca-py==0.42.0
+yfinance==0.2.54
+
+# Utilities
+python-dotenv
+matplotlib
+ipykernel
+
+tf-keras
