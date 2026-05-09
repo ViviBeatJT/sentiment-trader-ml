@@ -3,7 +3,7 @@ import numpy as np
 import tensorflow as tf
 from sklearn.preprocessing import MinMaxScaler
 from tensorflow.keras import layers
-
+import joblib
 
 def create_sequences(data, window_size=20):
     X, y = [], []
@@ -24,6 +24,8 @@ features = df[['open', 'high', 'low', 'close',
 # 2. Scale Data (TensorFlow performs best with 0 to 1 values)
 scaler = MinMaxScaler()
 scaled_features = scaler.fit_transform(features)
+joblib.dump(scaler, "models/scaler.pkl")
+print("Scaler saved!")
 
 # 3. Create Windows
 X, y = create_sequences(scaled_features, window_size=20)
