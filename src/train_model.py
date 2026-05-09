@@ -4,19 +4,22 @@ import tensorflow as tf
 from sklearn.preprocessing import MinMaxScaler
 from tensorflow.keras import layers
 
+
 def create_sequences(data, window_size=20):
     X, y = [], []
     for i in range(len(data) - window_size):
         # We use Price (open, high, low, close, volume) + Sentiment
-        X.append(data[i:(i + window_size), :-1]) 
+        X.append(data[i:(i + window_size), :-1])
         # The target is the last column
         y.append(data[i + window_size, -1])
     return np.array(X), np.array(y)
 
+
 # 1. Load Data
 df = pd.read_csv("data/training_master.csv")
 # Use: open, high, low, close, volume, sentiment_score, target
-features = df[['open', 'high', 'low', 'close', 'volume', 'sentiment_score', 'target']].values
+features = df[['open', 'high', 'low', 'close',
+               'volume', 'sentiment_score', 'target']].values
 
 # 2. Scale Data (TensorFlow performs best with 0 to 1 values)
 scaler = MinMaxScaler()
@@ -38,14 +41,16 @@ model = tf.keras.Sequential([
     layers.LSTM(50),
     layers.Dropout(0.2),
     layers.Dense(25, activation='relu'),
-    layers.Dense(1, activation='sigmoid') # Sigmoid for 0 or 1 prediction
+    layers.Dense(1, activation='sigmoid')  # Sigmoid for 0 or 1 prediction
 ])
 
-model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
+model.compile(optimizer='adam', loss='binary_crossentropy',
+              metrics=['accuracy'])
 
 # 6. Train
 print("Starting training...")
-model.fit(X_train, y_train, epochs=10, batch_size=32, validation_data=(X_test, y_test))
+model.fit(X_train, y_train, epochs=10, batch_size=32,
+          validation_data=(X_test, y_test))
 
 # 7. Save
 model.save("models/sentiment_lstm_model.keras")
