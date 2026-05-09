@@ -24,7 +24,7 @@ def fetch_news_data(symbol, start_date, end_date):
             symbols=symbol,
             start=datetime.strptime(start_date, '%Y-%m-%d'),
             end=datetime.strptime(end_date, '%Y-%m-%d'),
-            limit=2000,
+            limit=4000,
             page_token=next_page_token
         )
 
@@ -41,7 +41,7 @@ def fetch_news_data(symbol, start_date, end_date):
         next_page_token = response.next_page_token
         print(f"Fetched {len(all_articles)} articles so far...")
         
-        if not next_page_token or len(all_articles) >= 2000:
+        if not next_page_token or len(all_articles) >= 4000:
             break
 
     for n in all_articles:
@@ -69,4 +69,4 @@ def fetch_news_data(symbol, start_date, end_date):
 
 
 if __name__ == "__main__":
-    fetch_news_data("AAPL", "2024-01-01", "2026-05-01")
+    fetch_news_data("AAPL", "2025-06-01", "2026-05-01")

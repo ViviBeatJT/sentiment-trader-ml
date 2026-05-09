@@ -51,4 +51,4 @@ if __name__ == "__main__":
         os.makedirs('data')
 
     # Example: Fetching 2 years of Apple data
-    fetch_stock_data("AAPL", "2024-01-01", "2026-04-01")
+    fetch_stock_data("AAPL", "2025-06-01", "2026-05-01")
