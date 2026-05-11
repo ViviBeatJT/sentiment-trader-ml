@@ -4,6 +4,8 @@ import tensorflow as tf
 from sklearn.preprocessing import MinMaxScaler
 from tensorflow.keras import layers
 import joblib
+from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint
+
 
 def create_sequences(data, window_size=20):
     X, y = [], []
@@ -18,9 +20,11 @@ def create_sequences(data, window_size=20):
 # 1. Load Data
 df = pd.read_csv("data/training_master.csv")
 # Use: open, high, low, close, volume, sentiment_score, target
-features = df[['open', 'high', 'low', 'close',
-               'volume', 'sentiment_score', 'target']].values
+# features = df[['open', 'high', 'low', 'close',
+#                'volume', 'sentiment_score', 'target']].values
 
+features = df[['returns', 'range_pct', 'volume_intensity',
+               'sentiment_score', 'sentiment_change', 'target']].values
 # 2. Scale Data (TensorFlow performs best with 0 to 1 values)
 scaler = MinMaxScaler()
 scaled_features = scaler.fit_transform(features)
@@ -39,9 +43,9 @@ y_train, y_test = y[:split], y[split:]
 model = tf.keras.Sequential([
     layers.Input(shape=(X_train.shape[1], X_train.shape[2])),
     layers.LSTM(50, return_sequences=True),
-    layers.Dropout(0.2),
+    layers.Dropout(0.4),
     layers.LSTM(50),
-    layers.Dropout(0.2),
+    layers.Dropout(0.4),
     layers.Dense(25, activation='relu'),
     layers.Dense(1, activation='sigmoid')  # Sigmoid for 0 or 1 prediction
 ])
@@ -49,9 +53,19 @@ model = tf.keras.Sequential([
 model.compile(optimizer='adam', loss='binary_crossentropy',
               metrics=['accuracy'])
 
+callbacks = [
+    # 如果验证集准确率（val_accuracy）连续 5 个 epoch 不提升，就停止训练
+    EarlyStopping(monitor='val_accuracy', patience=5,
+                  restore_best_weights=True),
+
+    # 自动保存训练过程中准确率最高的模型
+    ModelCheckpoint('best_trading_model.h5',
+                    monitor='val_accuracy', save_best_only=True)
+]
+
 # 6. Train
 print("Starting training...")
-model.fit(X_train, y_train, epochs=10, batch_size=32,
+model.fit(X_train, y_train, epochs=50, batch_size=32,
           validation_data=(X_test, y_test))
 
 # 7. Save
